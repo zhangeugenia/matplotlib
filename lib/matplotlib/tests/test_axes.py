@@ -585,12 +585,12 @@ def test_shaped_data():
 
 
 def test_structured_data():
-    # support for stuctured data
+    # data with string labels support
     pts = np.array([(1, 1), (2, 2)], dtype=[("ones", float), ("twos", float)])
 
-    fig, ax = plt.subplots(2)
-    ax[0].plot("ones", "twos", data=pts)
-    ax[1].plot("ones", "twos", "r", data=pts)
+    fig, ax = plt.subplots()
+    ax.plot("ones", "twos", data=pts)
+    ax.scatter("ones", "twos", data=pts)
 
 
 @image_comparison(baseline_images=['const_xy'])
