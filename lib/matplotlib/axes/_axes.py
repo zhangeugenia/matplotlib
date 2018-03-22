@@ -56,8 +56,10 @@ def _plot_args_replacer(args, data):
     elif len(args) == 2:
         # this can be two cases: x,y or y,c
         if (not args[1] in data and
-            not (hasattr(data, 'dtype') and hasattr(data.dtype, 'names') and
-            data.dtype.names is not None and args[1] in data.dtype.names)):
+            not (hasattr(data, 'dtype') and
+                 hasattr(data.dtype, 'names') and
+                 data.dtype.names is not None and
+                 args[1] in data.dtype.names)):
             # this is not in data, so just assume that it is something which
             # will not get replaced (color spec or array like).
             return ["y", "c"]
