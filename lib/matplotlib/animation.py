@@ -16,8 +16,6 @@
 #   * Can blit be enabled for movies?
 # * Need to consider event sources to allow clicking through multiple figures
 
-import six
-
 import abc
 import base64
 import contextlib
@@ -168,7 +166,7 @@ class MovieWriterRegistry(object):
 writers = MovieWriterRegistry()
 
 
-class AbstractMovieWriter(six.with_metaclass(abc.ABCMeta)):
+class AbstractMovieWriter(abc.ABC):
     '''
     Abstract base class for writing movies. Fundamentally, what a MovieWriter
     does is provide is a way to grab frames by calling grab_frame().
@@ -629,7 +627,7 @@ class FFMpegBase(object):
             args.extend(['-b', '%dk' % self.bitrate])
         if self.extra_args:
             args.extend(self.extra_args)
-        for k, v in six.iteritems(self.metadata):
+        for k, v in self.metadata.items():
             args.extend(['-metadata', '%s=%s' % (k, v)])
 
         return args + ['-y', self.outfile]
@@ -687,8 +685,7 @@ class FFMpegFileWriter(FFMpegBase, FileMovieWriter):
                 '-vframes', str(self._frame_counter)] + self.output_args
 
 
-# Base class of avconv information.  AVConv has identical arguments to
-# FFMpeg
+# Base class of avconv information.  AVConv has identical arguments to FFMpeg.
 class AVConvBase(FFMpegBase):
     '''Mixin class for avconv output.
 
@@ -1096,9 +1093,9 @@ class Animation(object):
         # to use
         if writer is None:
             writer = rcParams['animation.writer']
-        elif (not isinstance(writer, six.string_types) and
-                any(arg is not None
-                    for arg in (fps, codec, bitrate, extra_args, metadata))):
+        elif (not isinstance(writer, str) and
+              any(arg is not None
+                  for arg in (fps, codec, bitrate, extra_args, metadata))):
             raise RuntimeError('Passing in values for arguments '
                                'fps, codec, bitrate, extra_args, or metadata '
                                'is not supported when writer is an existing '
@@ -1141,7 +1138,7 @@ class Animation(object):
 
         # If we have the name of a writer, instantiate an instance of the
         # registered class.
-        if isinstance(writer, six.string_types):
+        if isinstance(writer, str):
             if writer in writers.avail:
                 writer = writers[writer](fps, codec, bitrate,
                                          extra_args=extra_args,
@@ -1342,7 +1339,8 @@ class Animation(object):
                 # Now open and base64 encode.
                 vid64 = base64.encodebytes(path.read_bytes())
 
-            if len(vid64) >= embed_limit:
+            vid_len = len(vid64)
+            if vid_len >= embed_limit:
                 _log.warning(
                     "Animation movie is %s bytes, exceeding the limit of %s. "
                     "If you're sure you want a large animation embedded, set "
