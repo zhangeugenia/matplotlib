@@ -475,8 +475,6 @@ def figure(num=None,  # autoincrement if None, else integer from 1-N
 
     """
 
-    print("WORKING VERSION")
-
     if figsize is None:
         figsize = rcParams['figure.figsize']
     if dpi is None:
